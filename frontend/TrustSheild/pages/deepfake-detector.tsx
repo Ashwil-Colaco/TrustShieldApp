@@ -1,13 +1,65 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNav from '../components/bottom-nav';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
+import { apiService, AnalysisResponse } from '../services/api';
+import ResultCard from '../components/result-card';
 
 
 export default function DeepfakeDetector() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('video');
+  const [activeTab, setActiveTab] = useState<'video' | 'image' | 'audio'>('video');
+  const [selectedFile, setSelectedFile] = useState<{ uri: string; name: string; type: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<AnalysisResponse | null>(null);
+
+  const handleBrowse = async () => {
+    setResult(null);
+    setSelectedFile(null);
+    if (activeTab === 'image') {
+      const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images });
+      if (!picked.canceled && picked.assets[0]) {
+        const asset = picked.assets[0];
+        setSelectedFile({ uri: asset.uri, name: asset.fileName ?? 'image.jpg', type: asset.mimeType ?? 'image/jpeg' });
+      }
+    } else if (activeTab === 'video') {
+      const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Videos });
+      if (!picked.canceled && picked.assets[0]) {
+        const asset = picked.assets[0];
+        setSelectedFile({ uri: asset.uri, name: asset.fileName ?? 'video.mp4', type: asset.mimeType ?? 'video/mp4' });
+      }
+    } else {
+      const picked = await DocumentPicker.getDocumentAsync({ type: 'audio/*' });
+      if (!picked.canceled && picked.assets[0]) {
+        const asset = picked.assets[0];
+        setSelectedFile({ uri: asset.uri, name: asset.name, type: asset.mimeType ?? 'audio/m4a' });
+      }
+    }
+  };
+
+  const handleAnalyze = async () => {
+    if (!selectedFile) return;
+    setIsLoading(true);
+    setResult(null);
+    try {
+      let res: AnalysisResponse;
+      if (activeTab === 'image') {
+        res = await apiService.analyzeImage(selectedFile.uri, selectedFile.name, selectedFile.type);
+      } else if (activeTab === 'video') {
+        res = await apiService.analyzeVideo(selectedFile.uri, selectedFile.name, selectedFile.type);
+      } else {
+        res = await apiService.analyzeAudio(selectedFile.uri, selectedFile.name, selectedFile.type);
+      }
+      setResult(res);
+    } catch (e) {
+      console.error('Deepfake analysis failed', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -70,8 +122,10 @@ export default function DeepfakeDetector() {
             <Ionicons name="videocam-outline" size={14} color="#FFF" style={styles.formatIcon} />
             <Text style={styles.formatText}>MP4, MOV</Text>
           </View>
-          <TouchableOpacity style={styles.browseButton}>
-            <Text style={styles.browseButtonText}>Browse Files</Text>
+          <TouchableOpacity style={styles.browseButton} onPress={handleBrowse}>
+            <Text style={styles.browseButtonText}>
+              {selectedFile ? '✓ ' + selectedFile.name.slice(0, 20) : 'Browse Files'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -114,10 +168,22 @@ export default function DeepfakeDetector() {
         </View>
 
         {/* Start Analysis Button */}
-        <TouchableOpacity style={styles.analyzeButton}>
-          <Ionicons name="scan-outline" size={20} color="#05050A" style={styles.analyzeIcon} />
-          <Text style={styles.analyzeButtonText}>Start AI Analysis</Text>
+        <TouchableOpacity
+          style={[styles.analyzeButton, (!selectedFile || isLoading) && styles.analyzeButtonDisabled]}
+          onPress={handleAnalyze}
+          disabled={!selectedFile || isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#05050A" />
+          ) : (
+            <>
+              <Ionicons name="scan-outline" size={20} color="#05050A" style={styles.analyzeIcon} />
+              <Text style={styles.analyzeButtonText}>Start AI Analysis</Text>
+            </>
+          )}
         </TouchableOpacity>
+
+        {result && <ResultCard title="Analysis Complete" data={result} />}
 
         <View style={styles.bottomPadding} />
       </ScrollView>
@@ -333,6 +399,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  analyzeButtonDisabled: {
+    opacity: 0.5,
   },
   bottomPadding: {
     height: 80,

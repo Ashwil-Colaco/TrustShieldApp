@@ -1,13 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNav from '../components/bottom-nav';
+import { apiService, AnalysisResponse } from '../services/api';
+import ResultCard from '../components/result-card';
 
 
 export default function EmailAnalysis() {
   const router = useRouter();
   const [emailContent, setEmailContent] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResponse | null>(null);
+
+  const handleAnalyze = async () => {
+    if (!emailContent.trim()) return;
+    
+    setIsLoading(true);
+    setAnalysisResult(null);
+    try {
+      const result = await apiService.analyzeText(emailContent);
+      setAnalysisResult(result);
+    } catch (error) {
+      console.error('Analysis failed', error);
+      // In a real app we'd show a toast or error UI here
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -87,10 +107,25 @@ export default function EmailAnalysis() {
           </View>
 
           {/* Main Action Button */}
-          <TouchableOpacity style={styles.analyzeButton}>
-            <Ionicons name="flash-outline" size={20} color="#1C1D2A" style={styles.analyzeIcon} />
-            <Text style={styles.analyzeButtonText}>ANALYZE EMAIL</Text>
+          <TouchableOpacity 
+            style={[styles.analyzeButton, isLoading || !emailContent.trim() ? styles.analyzeButtonDisabled : null]}
+            onPress={handleAnalyze}
+            disabled={isLoading || !emailContent.trim()}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#05050A" />
+            ) : (
+              <>
+                <Ionicons name="flash-outline" size={20} color="#1C1D2A" style={styles.analyzeIcon} />
+                <Text style={styles.analyzeButtonText}>ANALYZE EMAIL</Text>
+              </>
+            )}
           </TouchableOpacity>
+
+          {/* Results Area */}
+          {analysisResult && (
+            <ResultCard title="Analysis Complete" data={analysisResult} />
+          )}
 
           <View style={styles.bottomPadding} />
         </ScrollView>
@@ -287,6 +322,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 1,
+  },
+  analyzeButtonDisabled: {
+    opacity: 0.5,
   },
   bottomPadding: {
     height: 100,

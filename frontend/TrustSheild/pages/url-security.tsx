@@ -1,13 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNav from '../components/bottom-nav';
+import { apiService, AnalysisResponse } from '../services/api';
+import ResultCard from '../components/result-card';
 
 
 export default function UrlSecurity() {
   const router = useRouter();
   const [url, setUrl] = useState('https://example-phish.com');
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<AnalysisResponse | null>(null);
+
+  const handleScan = async () => {
+    if (!url.trim()) return;
+    setIsLoading(true);
+    setResult(null);
+    try {
+      const res = await apiService.analyzeText(url.trim());
+      setResult(res);
+    } catch (e) {
+      console.error('URL scan failed', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -58,11 +76,23 @@ export default function UrlSecurity() {
             />
           </View>
 
-          <TouchableOpacity style={styles.scanButton}>
-            <Ionicons name="search-outline" size={20} color="#05050A" style={styles.scanIcon} />
-            <Text style={styles.scanButtonText}>SCAN URL</Text>
+          <TouchableOpacity
+            style={[styles.scanButton, (isLoading || !url.trim()) && styles.scanButtonDisabled]}
+            onPress={handleScan}
+            disabled={isLoading || !url.trim()}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#05050A" />
+            ) : (
+              <>
+                <Ionicons name="search-outline" size={20} color="#05050A" style={styles.scanIcon} />
+                <Text style={styles.scanButtonText}>SCAN URL</Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
+
+        {result && <ResultCard title="Scan Complete" data={result} />}
 
         {/* AI Analysis Vectors Section */}
         <View style={styles.vectorsHeader}>
@@ -311,6 +341,9 @@ const styles = StyleSheet.create({
     color: '#8A8D9F',
     fontSize: 13,
     lineHeight: 20,
+  },
+  scanButtonDisabled: {
+    opacity: 0.5,
   },
   bottomPadding: {
     height: 100,

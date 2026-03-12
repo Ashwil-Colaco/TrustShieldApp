@@ -1,14 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Platform, StatusBar, SafeAreaView, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNav from '../components/bottom-nav';
+import { apiService, AnalysisResponse } from '../services/api';
+import ResultCard from '../components/result-card';
 
 
 export default function VerifyNews() {
   const router = useRouter();
   const [headline, setHeadline] = useState('');
   const [articleLink, setArticleLink] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<AnalysisResponse | null>(null);
+
+  const handleVerify = async () => {
+    const textToAnalyze = headline.trim() || articleLink.trim();
+    if (!textToAnalyze) return;
+    setIsLoading(true);
+    setResult(null);
+    try {
+      const res = await apiService.analyzeText(textToAnalyze);
+      setResult(res);
+    } catch (e) {
+      console.error('Verify failed', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,15 +118,27 @@ export default function VerifyNews() {
           </View>
 
           {/* Verify Button */}
-          <TouchableOpacity style={styles.verifyButton}>
-            <Ionicons name="scan-outline" size={20} color="#05050A" style={styles.verifyIcon} />
-            <Text style={styles.verifyButtonText}>Verify Content</Text>
+          <TouchableOpacity
+            style={[styles.verifyButton, (isLoading || (!headline.trim() && !articleLink.trim())) && styles.verifyButtonDisabled]}
+            onPress={handleVerify}
+            disabled={isLoading || (!headline.trim() && !articleLink.trim())}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#05050A" />
+            ) : (
+              <>
+                <Ionicons name="scan-outline" size={20} color="#05050A" style={styles.verifyIcon} />
+                <Text style={styles.verifyButtonText}>Verify Content</Text>
+              </>
+            )}
           </TouchableOpacity>
 
           <View style={styles.timingNoteContainer}>
             <Ionicons name="information-circle-outline" size={12} color="#6A7185" style={styles.timingNoteIcon} />
             <Text style={styles.timingNoteText}>Analysis typically takes 3-5 seconds</Text>
           </View>
+
+          {result && <ResultCard title="Verification Complete" data={result} />}
 
           {/* Pro Tips Section */}
           <Text style={styles.proTipsTitle}>PRO TIPS</Text>
@@ -360,6 +391,9 @@ const styles = StyleSheet.create({
     color: '#6A7185',
     fontSize: 11,
     lineHeight: 16,
+  },
+  verifyButtonDisabled: {
+    opacity: 0.5,
   },
   bottomPadding: {
     height: 80,
