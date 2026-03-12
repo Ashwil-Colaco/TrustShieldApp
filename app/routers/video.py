@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.models import AnalysisResult
-from app.tools.video_tools import gemini_analyze_video, score_video_frames
+from app.tools.video_tools import gemini_analyze_video
 from app.agent import run_video_agent
 
 router = APIRouter()
@@ -14,7 +14,6 @@ async def analyze_video(file: UploadFile = File(...)):
     try:
         video_bytes = await file.read()
         gemini_result = gemini_analyze_video(video_bytes, mime_type=file.content_type)
-        frame_scores = score_video_frames(video_bytes)
-        return run_video_agent(gemini_result, frame_scores)
+        return run_video_agent(gemini_result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

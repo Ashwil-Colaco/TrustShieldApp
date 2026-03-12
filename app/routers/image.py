@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.models import AnalysisResult
-from app.tools.image_tools import hf_detect_image_deepfake, gemini_analyze_image
+from app.tools.image_tools import gemini_analyze_image
 from app.agent import run_image_agent
 
 router = APIRouter()
@@ -13,8 +13,7 @@ async def analyze_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=f"Unsupported image type: {file.content_type}")
     try:
         image_bytes = await file.read()
-        hf_result = hf_detect_image_deepfake(image_bytes, mime_type=file.content_type)
         gemini_result = gemini_analyze_image(image_bytes, mime_type=file.content_type)
-        return run_image_agent(hf_result, gemini_result)
+        return run_image_agent(gemini_result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

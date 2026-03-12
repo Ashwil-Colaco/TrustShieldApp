@@ -60,61 +60,34 @@ def run_text_agent(text: str, url_flags: dict) -> AnalysisResult:
     )
 
 
-def run_image_agent(hf_result: dict, gemini_result: dict) -> AnalysisResult:
-    hf_score = hf_result.get("deepfake_score", 0.0)
-    gemini_score = gemini_result.get("risk_score", 0.0)
-    combined = round((hf_score * 0.5) + (gemini_score * 0.5), 3)
-    threat_types = list(
-        set(hf_result.get("threat_types", []) + gemini_result.get("threat_types", []))
-    )
-    explanation = (
-        f"deepfake model: {hf_result.get('label', 'N/A')} "
-        f"(confidence {hf_score:.2f}). "
-        f"Gemini vision analysis: {gemini_result.get('explanation', '')}"
-    )
+def run_image_agent(gemini_result: dict) -> AnalysisResult:
+    score = round(float(gemini_result.get("risk_score", 0.0)), 3)
     return AnalysisResult(
-        risk_score=combined,
-        risk_level=_risk_level(combined),
-        threat_types=threat_types,
-        explanation=explanation,
-        tool_outputs={"hf_deepfake": hf_result, "gemini_vision": gemini_result},
+        risk_score=score,
+        risk_level=_risk_level(score),
+        threat_types=gemini_result.get("threat_types", []),
+        explanation=gemini_result.get("explanation", ""),
+        tool_outputs={"gemini_vision": gemini_result},
     )
 
 
-def run_video_agent(gemini_result: dict, frame_scores: list[float]) -> AnalysisResult:
-    gemini_score = gemini_result.get("risk_score", 0.0)
-    avg_frame = sum(frame_scores) / len(frame_scores) if frame_scores else 0.0
-    combined = round((gemini_score * 0.6) + (avg_frame * 0.4), 3)
-    explanation = (
-        f"Gemini video analysis score: {gemini_score:.2f}. "
-        f"Frame-level deepfake average: {avg_frame:.2f} over {len(frame_scores)} frames. "
-        f"{gemini_result.get('explanation', '')}"
-    )
+def run_video_agent(gemini_result: dict) -> AnalysisResult:
+    score = round(float(gemini_result.get("risk_score", 0.0)), 3)
     return AnalysisResult(
-        risk_score=combined,
-        risk_level=_risk_level(combined),
-        threat_types=gemini_result.get("threat_types", ["deepfake_video"]),
-        explanation=explanation,
-        tool_outputs={"gemini_video": gemini_result, "frame_scores": frame_scores},
+        risk_score=score,
+        risk_level=_risk_level(score),
+        threat_types=gemini_result.get("threat_types", []),
+        explanation=gemini_result.get("explanation", ""),
+        tool_outputs={"gemini_video": gemini_result},
     )
 
 
-def run_audio_agent(hf_result: dict, gemini_result: dict) -> AnalysisResult:
-    hf_score = hf_result.get("deepfake_score", 0.0)
-    gemini_score = gemini_result.get("risk_score", 0.0)
-    combined = round((hf_score * 0.5) + (gemini_score * 0.5), 3)
-    threat_types = list(
-        set(hf_result.get("threat_types", []) + gemini_result.get("threat_types", []))
-    )
-    explanation = (
-        f"HuggingFace audio deepfake model: {hf_result.get('label', 'N/A')} "
-        f"(confidence {hf_score:.2f}). "
-        f"Gemini audio analysis: {gemini_result.get('explanation', '')}"
-    )
+def run_audio_agent(gemini_result: dict) -> AnalysisResult:
+    score = round(float(gemini_result.get("risk_score", 0.0)), 3)
     return AnalysisResult(
-        risk_score=combined,
-        risk_level=_risk_level(combined),
-        threat_types=threat_types,
-        explanation=explanation,
-        tool_outputs={"hf_audio": hf_result, "gemini_audio": gemini_result},
+        risk_score=score,
+        risk_level=_risk_level(score),
+        threat_types=gemini_result.get("threat_types", []),
+        explanation=gemini_result.get("explanation", ""),
+        tool_outputs={"gemini_audio": gemini_result},
     )
