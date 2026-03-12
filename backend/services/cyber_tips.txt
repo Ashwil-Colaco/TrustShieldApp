@@ -1,0 +1,100 @@
+Never click unknown links in emails
+  Always verify the sender domain before trusting an email
+  Banks never ask for passwords through email
+  Avoid downloading attachments from unknown senders
+  Use strong passwords with numbers and symbols
+  Enable two-factor authentication for important accounts
+  Be cautious of shortened links like bit.ly
+  Check URLs before entering login credentials
+  Keep your software and apps updated
+  Do not share OTP codes with anyone
+  Always log out of accounts on public computers
+  Hover over links to see the real destination
+  Do not use the same password for multiple accounts
+  Verify unusual requests from your boss by phone
+  Report suspicious emails to your IT department
+  Use a password manager to store your credentials
+  Avoid using public Wi-Fi for banking or shopping
+  Be wary of emails that create a sense of panic
+  Do not trust emails with generic greetings like Dear Customer
+  Look for spelling and grammar errors in professional emails
+  Update your phone and computer operating systems monthly
+  Check your bank statements regularly for unknown charges
+  Never give remote access to your computer to strangers
+  Be careful with social media quizzes that ask for personal info
+  Do not post your phone number or address on public profiles
+  Lock your screen every time you walk away from your desk
+  Use biometrics like fingerprint or face ID when available
+  Delete apps you no longer use from your phone
+  Check app permissions before clicking accept
+  Avoid clicking on pop-up ads that say you have a virus
+  Use a VPN when connecting to hotel or airport Wi-Fi
+  Do not use easy to guess passwords like 123456
+  Be skeptical of prizes for contests you never entered
+  Verify the source of any request for a wire transfer
+  Keep your email recovery phone number up to date
+  Avoid storing sensitive info in plain text files
+  Never share your social security or ID number via email
+  Turn off Bluetooth when you are not using it
+  Be cautious of fake shipping notifications from FedEx or UPS
+  Check for the padlock icon in your browser address bar
+  Do not plug in random USB drives you find in public
+  Use a guest Wi-Fi network for visitors at your home
+  Be wary of friend requests from people you already know
+  Avoid saving credit card details in your browser
+  Use encrypted messaging apps for private conversations
+  Back up your important files to a separate hard drive
+  Do not reply to spam emails as it confirms you are active
+  Check the URL for slight misspellings like G00gle.com
+  Use a privacy screen on your phone in crowded places
+  Set your social media accounts to private mode
+  Be careful with QR codes from unknown sources
+  Avoid using your birthday or name in your passwords
+  Check if your data was leaked on Have I Been Pwned
+  Do not click allow on browser notification requests
+  Verify identity before sending money to a friend in need
+  Keep your home router firmware updated
+  Change the default password on your home Wi-Fi
+  Be wary of job offers that seem too good to be true
+  Do not use your work email for personal accounts
+  Always check the from address in the email headers
+  Avoid using autofill for sensitive login forms
+  Never leave your devices unattended in public
+  Be cautious of emails asking to verify your account
+  Use long passphrases instead of short passwords
+  Avoid downloading pirated software or movies
+  Check for unusual login alerts in your security settings
+  Do not give out your email to every website you visit
+  Use a burner email for one-time signups
+  Verify that any software update is from the official site
+  Be wary of tech support calling you out of the blue
+  Do not share photos of your boarding pass or tickets
+  Avoid using the same security questions across sites
+  Keep your browser cache and cookies clean
+  Be cautious of charity requests after a major disaster
+  Do not use public USB charging stations at airports
+  Verify the sender when receiving an unexpected invoice
+  Check your mobile app store for fake reviews
+  Avoid saving your password on shared devices
+  Be wary of links sent through social media messages
+  Use an authenticator app instead of SMS for codes
+  Do not reuse your email password for anything else
+  Check that your antivirus software is active and running
+  Be cautious of messages asking for help with a locked account
+  Avoid clicking links in text messages from unknown numbers
+  Verify the official website by typing the address yourself
+  Do not store passwords in a physical notebook near your PC
+  Be wary of emails about inheritance or large bank transfers
+  Use a screen lock on all your mobile devices
+  Check the date and time of last login on your accounts
+  Avoid entering data on sites without a secure connection
+  Be cautious of attachments that end in .exe or .zip
+  Never pay for a prize or a job opportunity
+  Verify that the sender name matches the email address
+  Do not click on links in comments on social media
+  Keep your financial and social accounts separate
+  Avoid clicking on attractive clickbait headlines
+  Be wary of phone calls asking for personal details
+  Use a physical security key for maximum protection
+  Always trust your gut if a message feels wrong
+  Security is a daily habit so stay alert every day
