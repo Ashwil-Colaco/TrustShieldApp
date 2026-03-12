@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Pla
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNav from '../components/bottom-nav';
+import NotificationBell from '../components/notification-bell';
 
 
 export default function Home() {
@@ -13,10 +14,13 @@ export default function Home() {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <MaterialCommunityIcons name="shield-outline" size={24} color="#000" />
+          <View style={styles.logoGroup}>
+            <View style={styles.logoContainer}>
+              <MaterialCommunityIcons name="shield-outline" size={24} color="#000" />
+            </View>
+            <Text style={styles.logoText}>TrustShield</Text>
           </View>
-          <Text style={styles.logoText}>TrustShield</Text>
+          <NotificationBell />
         </View>
 
         {/* System Status Banner */}
@@ -199,8 +203,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 24,
     marginTop: 10,
+  },
+  logoGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logoContainer: {
     width: 32,
