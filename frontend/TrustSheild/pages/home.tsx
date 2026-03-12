@@ -32,7 +32,7 @@ export default function Home() {
         {/* Grid Container */}
         <View style={styles.gridContainer}>
           {/* Card 1 */}
-          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/email-analysis')}>
+          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/email-analysis' as any)}>
             <View style={styles.cardHeader}>
               <View style={styles.iconContainer}>
                 <Ionicons name="mail-outline" size={20} color="#2D5BFF" />
@@ -47,7 +47,7 @@ export default function Home() {
           </TouchableOpacity>
 
           {/* Card 2 */}
-          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/url-security')}>
+          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/url-security' as any)}>
             <View style={styles.cardHeader}>
               <View style={styles.iconContainer}>
                 <Ionicons name="link-outline" size={20} color="#2D5BFF" />
@@ -62,7 +62,7 @@ export default function Home() {
           </TouchableOpacity>
 
           {/* Card 3 */}
-          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/deepfake-detector')}>
+          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/deepfake-detector' as any)}>
             <View style={styles.cardHeader}>
               <View style={styles.iconContainer}>
                 <Ionicons name="videocam-outline" size={20} color="#2D5BFF" />
@@ -77,7 +77,7 @@ export default function Home() {
           </TouchableOpacity>
 
           {/* Card 4 */}
-          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/verify-news')}>
+          <TouchableOpacity style={styles.gridCard} onPress={() => router.push('/verify-news' as any)}>
             <View style={styles.cardHeader}>
               <View style={styles.iconContainer}>
                 <Ionicons name="newspaper-outline" size={20} color="#2D5BFF" />

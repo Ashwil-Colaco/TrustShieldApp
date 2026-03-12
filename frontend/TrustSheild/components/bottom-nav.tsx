@@ -26,7 +26,7 @@ export default function BottomNav({ activeRoute }: BottomNavProps) {
       
       <TouchableOpacity 
         style={styles.navItem} 
-        onPress={() => activeRoute !== 'analytics' && router.push('/analytics')}
+        onPress={() => activeRoute !== 'analytics' && router.push('/analytics' as any)}
       >
         <Ionicons 
           name={activeRoute === 'analytics' ? 'stats-chart' : 'stats-chart-outline'} 
@@ -38,7 +38,7 @@ export default function BottomNav({ activeRoute }: BottomNavProps) {
       
       <TouchableOpacity 
         style={styles.navItem} 
-        onPress={() => activeRoute !== 'account' && router.push('/account')}
+        onPress={() => activeRoute !== 'account' && router.push('/account' as any)}
       >
         <Ionicons 
           name={activeRoute === 'account' ? 'person' : 'person-outline'} 
