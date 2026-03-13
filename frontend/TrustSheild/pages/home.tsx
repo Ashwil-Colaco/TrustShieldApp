@@ -4,6 +4,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNav from '../components/bottom-nav';
 import NotificationBell from '../components/notification-bell';
+import * as WebBrowser from 'expo-web-browser';
 
 
 export default function Home() {
@@ -146,6 +147,29 @@ export default function Home() {
             </View>
           </View>
         </View>
+
+        {/* Breach Protection Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Breach Protection</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.breachCard}
+          onPress={() => WebBrowser.openBrowserAsync('https://haveibeenpwned.com/')}
+        >
+          <View style={styles.breachIconContainer}>
+            <MaterialCommunityIcons name="database-search-outline" size={24} color="#FF3B30" />
+          </View>
+          <View style={styles.breachContent}>
+            <Text style={styles.breachTitle}>Has your data been leaked?</Text>
+            <Text style={styles.breachDesc}>
+              Check if your email or phone is in a data breach using 'Have I Been Pwned'.
+            </Text>
+            <View style={styles.checkNowLink}>
+              <Text style={styles.checkNowText}>Check Now</Text>
+              <Ionicons name="arrow-forward" size={14} color="#2D5BFF" />
+            </View>
+          </View>
+        </TouchableOpacity>
 
         {/* Security Insights */}
         <View style={styles.sectionHeader}>
@@ -411,6 +435,52 @@ const styles = StyleSheet.create({
     color: '#8A8D9F',
     fontSize: 12,
     lineHeight: 18,
+  },
+  breachCard: {
+    backgroundColor: '#0F101A',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 32,
+    borderWidth: 1,
+    borderColor: '#1C1D2A',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  breachIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 14,
+    backgroundColor: '#1E1010',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+    borderWidth: 1,
+    borderColor: '#4A1D1D30',
+  },
+  breachContent: {
+    flex: 1,
+  },
+  breachTitle: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  breachDesc: {
+    color: '#8A8D9F',
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 10,
+  },
+  checkNowLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkNowText: {
+    color: '#2D5BFF',
+    fontSize: 14,
+    fontWeight: '600',
+    marginRight: 4,
   },
   bottomPadding: {
     height: 100,
