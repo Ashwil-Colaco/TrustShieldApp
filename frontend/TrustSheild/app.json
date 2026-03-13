@@ -65,12 +65,6 @@
             "backgroundColor": "#000000"
           }
         }
-      ],
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "Allow TrustShield to scan your screenshots for security threats."
-        }
       ]
     ],
     "experiments": {

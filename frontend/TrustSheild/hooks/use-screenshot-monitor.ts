@@ -1,108 +1,76 @@
 import { useState, useEffect, useRef } from "react";
-import * as MediaLibrary from "expo-media-library";
+import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { Alert } from "react-native";
 
+/**
+ * useScreenshotMonitor - Refactored to "Clipboard Shield"
+ * Monitors the system clipboard for changes to automate security analysis.
+ * Renamed internally for clarity but maintains hook name for UI compatibility.
+ */
 export function useScreenshotMonitor() {
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [hasDetected, setHasDetected] = useState(false);
-
-  const lastScanTimeRef = useRef<number>(Date.now());
+  const lastClipboardRef = useRef<string>("");
   const router = useRouter();
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
 
     if (isMonitoring) {
-      console.log("🛡 Shield Activated: Gallery polling started");
-
-      // run first scan immediately
-      checkAndScan();
+      console.log("🛡 Shield Activated: Clipboard monitoring started");
+      
+      // Initialize the ref with current value to avoid immediate trigger upon activation
+      Clipboard.getStringAsync().then(text => {
+        lastClipboardRef.current = text;
+      });
 
       interval = setInterval(() => {
-        checkAndScan();
-      }, 5000); // check every 5 seconds
+        checkClipboard();
+      }, 1000); // Polling every 1 second as requested
     }
 
     return () => {
       if (interval) clearInterval(interval);
-      console.log("🛑 Shield Deactivated: Polling stopped");
+      console.log("🛑 Shield Deactivated: Clipboard monitoring stopped");
     };
   }, [isMonitoring]);
 
-  const checkAndScan = async () => {
+  const checkClipboard = async () => {
     try {
-      // Request ONLY photo permission (avoids audio permission error)
-      const { status } = await MediaLibrary.getPermissionsAsync();
+      const currentText = await Clipboard.getStringAsync();
 
-      if (status !== "granted") {
-        const { status: newStatus } = await MediaLibrary.requestPermissionsAsync();
+      // Trigger if text changed and isn't empty
+      if (currentText !== lastClipboardRef.current && currentText.trim().length > 0) {
+        console.log("📋 NEW CLIPBOARD CONTENT DETECTED");
 
-        if (newStatus !== "granted") {
-          console.log("Permission denied");
-          setIsMonitoring(false);
-          return;
-        }
-      }
+        // Update the reference point
+        lastClipboardRef.current = currentText;
 
-      // Find screenshots album
-      const albums = await MediaLibrary.getAlbumsAsync();
-      const screenshotAlbum = albums.find((album) =>
-        album.title.toLowerCase().includes("screenshot")
-      );
-
-      if (!screenshotAlbum) {
-        console.log("No screenshot album found");
-        return;
-      }
-
-      // Get latest images from screenshots album
-      const media = await MediaLibrary.getAssetsAsync({
-        album: screenshotAlbum.id,
-        first: 5,
-        mediaType: MediaLibrary.MediaType.photo,
-        sortBy: [["creationTime", false]],
-      });
-
-      const newScreenshots = media.assets.filter((asset) => {
-        const name = asset.filename?.toLowerCase() || "";
-
-        const isScreenshot =
-          name.includes("screenshot") ||
-          name.includes("screen_shot") ||
-          name.includes("screen-shot") ||
-          name.includes("scr_");
-
-        const isNew = asset.creationTime * 1000 > lastScanTimeRef.current;
-
-        return isScreenshot && isNew;
-      });
-
-      if (newScreenshots.length > 0) {
-        console.log("📸 NEW SCREENSHOT DETECTED");
-
-        lastScanTimeRef.current = Date.now();
-
+        // Immediate physical feedback
         await Haptics.notificationAsync(
           Haptics.NotificationFeedbackType.Success
         );
 
+        // Show alert for background detection clarity
         Alert.alert(
           "🛡️ Shield Triggered",
-          "A new screenshot was detected. Opening analysis...",
+          "New clipboard content detected. Opening secure analysis...",
           [{ text: "OK" }]
         );
 
+        // Visual feedback state
         setHasDetected(true);
 
+        // Delay slightly for visual feedback before navigation
         setTimeout(() => {
           setHasDetected(false);
           router.push("/email-analysis" as any);
         }, 1500);
       }
     } catch (error) {
-      console.error("Gallery Polling failed:", error);
+      console.error("Clipboard Monitoring failed:", error);
     }
   };
 

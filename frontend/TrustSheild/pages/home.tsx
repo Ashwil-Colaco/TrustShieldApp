@@ -77,10 +77,10 @@ export default function Home() {
               isMonitoring && styles.monitorTitleActive,
               hasDetected && styles.monitorTitleDetected
             ]}>
-              {hasDetected ? "SHIELD TRIGGERED" : (isMonitoring ? "Screenshot Shield Active" : "Enable Screenshot Shield")}
+              {hasDetected ? "SHIELD TRIGGERED" : (isMonitoring ? "Clipboard Shield Active" : "Enable Clipboard Shield")}
             </Text>
             <Text style={styles.monitorDesc}>
-              {hasDetected ? "Security analysis starting..." : (isMonitoring ? "Detecting screenshots in background..." : "Tap to setup automated phishing detection.")}
+              {hasDetected ? "Security analysis starting..." : (isMonitoring ? "Detecting copies in background..." : "Tap to setup automated phishing detection.")}
             </Text>
           </View>
           <View style={[
@@ -284,7 +284,7 @@ export default function Home() {
             </View>
             
             <Text style={styles.consentDesc}>
-              TrustShield can detect when you take screenshots so it can help you analyze suspicious messages or links instantly.
+              TrustShield can detect when you copy text or links so it can help you analyze suspicious messages or links instantly.
             </Text>
 
             <View style={styles.tcContainer}>
@@ -308,7 +308,7 @@ export default function Home() {
               onPress={handleEnableDetection}
               disabled={!agreedToTerms}
             >
-              <Text style={styles.enableBtnText}>Enable Screenshot Detection</Text>
+              <Text style={styles.enableBtnText}>Enable Clipboard Detection</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
