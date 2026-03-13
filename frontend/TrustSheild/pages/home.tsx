@@ -1,14 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNav from '../components/bottom-nav';
 import NotificationBell from '../components/notification-bell';
 import * as WebBrowser from 'expo-web-browser';
+import { useScreenshotMonitor } from '../hooks/use-screenshot-monitor';
+import { Modal } from 'react-native';
 
 
 export default function Home() {
   const router = useRouter();
+  const { 
+    isMonitoring, 
+    setIsMonitoring,
+    hasDetected
+  } = useScreenshotMonitor();
+
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  const handleToggleMonitoring = () => {
+    if (!isMonitoring && !agreedToTerms) {
+      setShowConsentModal(true);
+      return;
+    }
+    setIsMonitoring(!isMonitoring);
+  };
+
+  const handleEnableDetection = () => {
+    if (agreedToTerms) {
+      setIsMonitoring(true);
+      setShowConsentModal(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -29,6 +54,41 @@ export default function Home() {
           <MaterialCommunityIcons name="circle-slice-8" size={14} color="#0A1E3F" style={styles.statusIcon} />
           <Text style={styles.statusText}>SYSTEM STATUS: OPTIMAL PROTECTION</Text>
         </View>
+
+        {/* Screenshot Monitor Toggle */}
+        <TouchableOpacity 
+          style={[
+            styles.monitorBanner, 
+            isMonitoring && styles.monitorBannerActive,
+            hasDetected && styles.monitorBannerDetected
+          ]}
+          onPress={handleToggleMonitoring}
+        >
+          <View style={[styles.monitorIconContainer, hasDetected && styles.iconContainerDetected]}>
+            <Ionicons 
+              name={hasDetected ? "shield-checkmark" : (isMonitoring ? "eye" : "eye-off")} 
+              size={18} 
+              color={hasDetected ? "#34C759" : (isMonitoring ? "#FFF" : "#6A7185")} 
+            />
+          </View>
+          <View style={styles.monitorContent}>
+            <Text style={[
+              styles.monitorTitle, 
+              isMonitoring && styles.monitorTitleActive,
+              hasDetected && styles.monitorTitleDetected
+            ]}>
+              {hasDetected ? "SHIELD TRIGGERED" : (isMonitoring ? "Screenshot Shield Active" : "Enable Screenshot Shield")}
+            </Text>
+            <Text style={styles.monitorDesc}>
+              {hasDetected ? "Security analysis starting..." : (isMonitoring ? "Detecting screenshots in background..." : "Tap to setup automated phishing detection.")}
+            </Text>
+          </View>
+          <View style={[
+            styles.statusDot, 
+            isMonitoring && styles.statusDotActive,
+            hasDetected && styles.statusDotDetected
+          ]} />
+        </TouchableOpacity>
 
         {/* Grid Container */}
         <View style={styles.gridContainer}>
@@ -207,6 +267,59 @@ export default function Home() {
       </ScrollView>
 
       <BottomNav activeRoute="home" />
+
+      {/* Screenshot Shield Consent Modal */}
+      <Modal
+        visible={showConsentModal}
+        animationType="fade"
+        transparent={true}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.consentCard}>
+            <View style={styles.consentHeader}>
+              <View style={styles.shieldDecoration}>
+                <Ionicons name="shield-checkmark" size={32} color="#2D5BFF" />
+              </View>
+              <Text style={styles.consentTitle}>Activate Shield</Text>
+            </View>
+            
+            <Text style={styles.consentDesc}>
+              TrustShield can detect when you take screenshots so it can help you analyze suspicious messages or links instantly.
+            </Text>
+
+            <View style={styles.tcContainer}>
+              <TouchableOpacity 
+                style={styles.checkbox} 
+                onPress={() => setAgreedToTerms(!agreedToTerms)}
+              >
+                <Ionicons 
+                  name={agreedToTerms ? "checkbox" : "square-outline"} 
+                  size={20} 
+                  color={agreedToTerms ? "#2D5BFF" : "#6A7185"} 
+                />
+              </TouchableOpacity>
+              <Text style={styles.tcText}>
+                I agree to the <Text style={styles.tcLink}>Terms & Conditions</Text> for automated monitoring.
+              </Text>
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.enableBtn, !agreedToTerms && styles.enableBtnDisabled]}
+              onPress={handleEnableDetection}
+              disabled={!agreedToTerms}
+            >
+              <Text style={styles.enableBtnText}>Enable Screenshot Detection</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.cancelBtn}
+              onPress={() => setShowConsentModal(false)}
+            >
+              <Text style={styles.cancelBtnText}>Dismiss</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -481,6 +594,163 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 4,
+  },
+  monitorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0A0A0F',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#1C1D2A',
+  },
+  monitorBannerActive: {
+    borderColor: '#2D5BFF',
+    backgroundColor: '#0F1530',
+  },
+  monitorBannerDetected: {
+    borderColor: '#34C759',
+    backgroundColor: '#0A1A10',
+  },
+  monitorIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#151622',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  iconContainerDetected: {
+    backgroundColor: '#102A18',
+  },
+  monitorContent: {
+    flex: 1,
+  },
+  monitorTitle: {
+    color: '#6A7185',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  monitorTitleActive: {
+    color: '#FFF',
+  },
+  monitorTitleDetected: {
+    color: '#34C759',
+  },
+  monitorDesc: {
+    color: '#8A8D9F',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#6A7185',
+    marginLeft: 10,
+  },
+  statusDotActive: {
+    backgroundColor: '#34C759',
+    shadowColor: '#34C759',
+    shadowRadius: 4,
+    shadowOpacity: 0.5,
+  },
+  statusDotDetected: {
+    backgroundColor: '#34C759',
+    transform: [{ scale: 1.5 }],
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  consentCard: {
+    width: '100%',
+    backgroundColor: '#0F101A',
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#1C1D2A',
+  },
+  consentHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  shieldDecoration: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#0A0A1F',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#2D5BFF30',
+  },
+  consentTitle: {
+    color: '#FFF',
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  consentDesc: {
+    color: '#8A8D9F',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  tcContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+    backgroundColor: '#0A0A0F',
+    padding: 12,
+    borderRadius: 12,
+  },
+  checkbox: {
+    marginRight: 10,
+  },
+  tcText: {
+    color: '#FFF',
+    fontSize: 12,
+    flex: 1,
+  },
+  tcLink: {
+    color: '#2D5BFF',
+    fontWeight: '700',
+  },
+  enableBtn: {
+    backgroundColor: '#2D5BFF',
+    height: 52,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  enableBtnDisabled: {
+    backgroundColor: '#1C1D2A',
+    opacity: 0.5,
+  },
+  enableBtnText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  cancelBtn: {
+    height: 48,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cancelBtnText: {
+    color: '#6A7185',
+    fontSize: 14,
+    fontWeight: '600',
   },
   bottomPadding: {
     height: 100,
