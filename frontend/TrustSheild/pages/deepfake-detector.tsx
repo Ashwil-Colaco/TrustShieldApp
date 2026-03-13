@@ -53,7 +53,18 @@ export default function DeepfakeDetector() {
       } else {
         res = await apiService.analyzeAudio(selectedFile.uri, selectedFile.name, selectedFile.type);
       }
-      setResult(res);
+      // Map to premium format with Dynamic Metrics & Badges
+      const score = res.risk_score || res.score || 80;
+
+      setResult({
+        ...res,
+        title: "Analysis Results",
+        score: typeof score === 'number' ? Math.round(score) : score,
+        riskLevel: res.risk_level || (Number(score) < 45 ? "High Risk" : Number(score) < 70 ? "Medium Risk" : "Low Risk"),
+        threatTypes: res.threat_types || [],
+        summary: res.summary || res.explanation || `The deep neural agent has processed the ${activeTab} file.`,
+        rawJson: res
+      } as any);
     } catch (e) {
       console.error('Deepfake analysis failed', e);
     } finally {
@@ -183,7 +194,16 @@ export default function DeepfakeDetector() {
           )}
         </TouchableOpacity>
 
-        {result && <ResultCard title="Analysis Complete" data={result} />}
+        {result && (
+          <ResultCard 
+            title={result.title || "Analysis Results"} 
+            data={result.rawJson || result} 
+            score={result.score}
+            riskLevel={result.riskLevel}
+            threatTypes={result.threatTypes}
+            summary={result.summary}
+          />
+        )}
 
         <View style={styles.bottomPadding} />
       </ScrollView>
