@@ -15,7 +15,7 @@ export const apiService = {
     try {
       const response = await fetch(`${BASE_URL}/health`);
       return response.ok;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Health check failed:', error);
       return false;
     }
@@ -39,7 +39,7 @@ export const apiService = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return await response.json();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Text analysis failed:', error);
       throw error;
     }
@@ -111,7 +111,7 @@ export const apiService = {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return await response.json();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`File upload failed for ${url}:`, error);
       throw error;
     }
