@@ -11,19 +11,19 @@ Our primary focus is to protect vulnerable groups, especially the elderly who ar
 ## Core Features
 Our platform provides a security layer built right into the tools you use every day. 
 
-Smart Extension
+# Smart Extension
 You can highlight any text or web link on a page, and our scanner will instantly check it for misinformation or signs of phishing.
 
-Live Call Monitoring
+# Live Call Monitoring
 During a phone call, TrustShield analyzes the audio in background batches of five seconds. It actively looks for deepfake voice manipulation without interrupting your conversation.
 
-Email Protection
+# Email Protection
 We scan your inbox to catch sender spoofing, verify who is really emailing you, and check any attachments for malicious code.
 
-Visual Deepfake Detection
+# Visual Deepfake Detection
 If you come across a questionable image online, you can upload a screenshot to our dashboard, and we will verify if it has been artificially generated.
 
-Unified Dashboard
+# Unified Dashboard
 Everything comes together in our mobile app, serving as your central hub to review scans, alerts, and safety reports.
 
 ## How to Use
